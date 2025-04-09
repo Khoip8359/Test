@@ -15,7 +15,7 @@ public class Calculator {
 
 	public int divide(int a, int b) {
 		if (b == 0)
-			throw new IllegalArgumentException("Divide by zero");
+			throw new IllegalArgumentException("Chia cho số 0");
 		return a / b;
 	}
 	
