@@ -21,7 +21,11 @@
       </div>
   
       <div v-if="currentPage === 1 && pagedNews.length" class="featured-article">
-        <RouterLink :to="`/detail/${pagedNews[0].newsId}`" class="featured-link">
+        <RouterLink 
+          v-if="pagedNews[0].status === 'published'" 
+          :to="`/detail/${pagedNews[0].newsId}`" 
+          class="featured-link"
+        >
           <div class="featured-card">
             <div class="featured-image">
               <img :src="getImageUrl(pagedNews[0].thumbnail)" alt="thumbnail" />
@@ -50,12 +54,44 @@
             </div>
           </div>
         </RouterLink>
+        <div v-else class="featured-card non-clickable">
+          <div class="featured-image">
+            <img :src="getImageUrl(pagedNews[0].thumbnail)" alt="thumbnail" />
+            <div class="featured-overlay">
+              <div class="featured-badge">{{ pagedNews[0].category.categoryName }}</div>
+              <div class="status-badge">{{ getStatusText(pagedNews[0].status) }}</div>
+            </div>
+          </div>
+          <div class="featured-content">
+            <h1 class="featured-title">{{ pagedNews[0].title }}</h1>
+            <h2 class="featured-subtitle">{{ pagedNews[0].subtitle }}</h2>
+            <div class="featured-meta">
+              <div class="meta-item">
+                <span class="meta-icon">👤</span>
+                <span>{{ pagedNews[0].author.name }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon">👁️</span>
+                <span>{{ pagedNews[0].views }} lượt xem</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon">📅</span>
+                <span>{{ formatDate(pagedNews[0].createdDate) }}</span>
+              </div>
+            </div>
+            <p class="featured-description">{{ pagedNews[0].newsDetails[0].detail }}</p>
+          </div>
+        </div>
       </div>
   
       <!-- News Grid -->
       <div class="news-grid" v-if="pagedNews.length > (currentPage === 1 ? 1 : 0)">
         <template v-for="(item, idx) in (currentPage === 1 ? pagedNews.slice(1) : pagedNews)" :key="item.newsId">
-          <RouterLink :to="`/detail/${item.newsId}`" class="news-link">
+          <RouterLink 
+            v-if="item.status === 'published'" 
+            :to="`/detail/${item.newsId}`" 
+            class="news-link"
+          >
             <article class="news-card">
               <div class="news-image">
                 <img :src="getImageUrl(item.thumbnail)" alt="thumbnail" />
@@ -78,6 +114,28 @@
               </div>
             </article>
           </RouterLink>
+          <article v-else class="news-card non-clickable">
+            <div class="news-image">
+              <img :src="getImageUrl(item.thumbnail)" alt="thumbnail" />
+              <div class="news-badge">{{ item.category.categoryName }}</div>
+              <div class="status-badge">{{ getStatusText(item.status) }}</div>
+            </div>
+            <div class="news-content">
+              <h3 class="news-title">{{ item.title }}</h3>
+              <h4 class="news-subtitle">{{ item.subtitle }}</h4>
+              <div class="news-meta">
+                <div class="meta-row">
+                  <span class="author">{{ item.author.name }}</span>
+                  <span class="date">{{ formatDate(item.createdDate) }}</span>
+                </div>
+                <div class="views">
+                  <span class="views-icon">👁️</span>
+                  <span>{{ item.views }}</span>
+                </div>
+              </div>
+              <p class="news-description">{{ item.newsDetails[0].detail }}</p>
+            </div>
+          </article>
         </template>
       </div>
   
@@ -132,7 +190,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { RouterLink } from 'vue-router'
   import { getImageUrl } from '@/services/api'
-  
+    
   const newsList = ref([])
   const loading = ref(false)
   const error = ref(null)
@@ -170,6 +228,19 @@
   function formatDate(dateStr) {
     const d = new Date(dateStr)
     return d.toLocaleDateString('vi-VN')
+  }
+
+  function getStatusText(status) {
+    switch (status) {
+      case 'published':
+        return 'Đã xuất bản'
+      case 'rejected':
+        return 'Bị từ chối'
+      case 'pending':
+        return 'Đang chờ duyệt'
+      default:
+        return 'Trạng thái không xác định'
+    }
   }
   
   function goToPage(page) {
@@ -267,6 +338,12 @@
     transform: translateY(-5px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   }
+
+  .featured-card.non-clickable {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   
   .featured-image {
     position: relative;
@@ -302,6 +379,19 @@
     font-size: 0.9rem;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .status-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
   
   .featured-content {
@@ -376,6 +466,12 @@
     transform: translateY(-8px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
+
+  .news-card.non-clickable {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   
   .news-image {
     position: relative;
@@ -405,6 +501,19 @@
     font-size: 0.8rem;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 3rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
   }
   
   .news-content {

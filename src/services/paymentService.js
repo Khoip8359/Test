@@ -23,5 +23,13 @@ export const paymentService = {
     } catch (error) {
       console.log('Lỗi khi thêm giao dịch' + error);
     }
+  },
+  async upgradeAccount(userId){
+    try {
+      const response = await apiClient.post(`/api/upgrade?userId=${userId}`)
+      return response.data
+    } catch (error) {
+      console.log('Lỗi khi nâng cấp tài khoản' + error);
+    }
   }
 }

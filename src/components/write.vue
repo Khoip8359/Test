@@ -83,7 +83,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-bold text-dark">
                     <i class="bi bi-tags me-2 text-primary"></i>
-                    Danh mục *
+                    Danh mục
                   </label>
                   <select 
                     v-model="form.categoryId" 
@@ -245,7 +245,7 @@ const form = ref({
   thumbnail: '',
   categoryId: '',
   status: 'draft',
-  details: [''], // Start with one empty section
+  details: [''],
   paidPoint: 0
 })
 
@@ -319,8 +319,6 @@ const handleFileChange = (event) => {
   if (!file) return;
   thumbnailFile.value = file;
   thumbnailPreview.value = URL.createObjectURL(file);
-  // Không upload ngay, chỉ preview
-  // Không gán form.value.thumbnail ở đây!
 };
 
 const publishNews = async () => {
@@ -334,7 +332,6 @@ const publishNews = async () => {
   }
   isSubmitting.value = true
   try {
-    // Nếu có file thumbnail mới, upload trước
     let thumbnailUrl = form.value.thumbnail;
     if (thumbnailFile.value) {
       thumbnailUrl = await uploadService.uploadImage(thumbnailFile.value);
@@ -342,7 +339,7 @@ const publishNews = async () => {
     form.value.status = 'pending'
     const response = await newsCreateService.createNews({
       ...form.value,
-      thumbnail: thumbnailUrl, // dùng url vừa upload hoặc giữ nguyên
+      thumbnail: thumbnailUrl,
       authorId: auth.currentUser?.user?.userId
     })
     alert('Gửi bài thành công! Bài viết đang chờ kiểm duyệt.')
@@ -354,12 +351,6 @@ const publishNews = async () => {
     isSubmitting.value = false
   }
 }
-
-
-
-
-
-// Thay getImageUrl cục bộ bằng import từ service
 
 // Lifecycle
 onMounted(() => {

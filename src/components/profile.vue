@@ -189,18 +189,6 @@
                       </div>
                     </div>
 
-                    <div class="col-12">
-                      <label class="form-label fw-bold">
-                        <i class="bi bi-star me-2"></i>
-                        Điểm tích lũy
-                      </label>
-                      <div class="form-control-plaintext">
-                        <span class="badge bg-warning text-dark fs-6">
-                          {{ userProfile.remainingPoint }} điểm
-                        </span>
-                      </div>
-                    </div>
-
                     <div class="col-12" v-if="userProfile.description">
                       <label class="form-label fw-bold">
                         <i class="bi bi-chat-quote me-2"></i>

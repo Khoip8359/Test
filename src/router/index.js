@@ -19,6 +19,7 @@ import CensorStats from '@/components/censorStats.vue'
 import PaymentView from '@/views/paymentView.vue'
 import PaymentChoose from '@/components/paymentChoose.vue'
 import PaymentHistory from '@/components/paymentHistory.vue'
+import UpgradePermission from '@/components/UpgradePermission.vue'
   
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,10 @@ const router = createRouter({
             {
               path: 'history',
               component: PaymentHistory
+            },
+            {
+              path: 'update',
+              component: UpgradePermission
             }
           ]
         }
